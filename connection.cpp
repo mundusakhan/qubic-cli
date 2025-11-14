@@ -28,6 +28,7 @@
 #include "nostromo.h"
 #include "qutil.h"
 #include "qbond.h"
+#include "qrwa.h"
 
 #define DEFAULT_TIMEOUT_MSEC 1000
 
@@ -397,3 +398,11 @@ template GetCurrentResult_output QubicConnection::receivePacketWithHeaderAs<GetC
 template GetPollsByCreator_output QubicConnection::receivePacketWithHeaderAs<GetPollsByCreator_output>();
 template GetCurrentPollId_output QubicConnection::receivePacketWithHeaderAs<GetCurrentPollId_output>();
 template GetPollInfo_output QubicConnection::receivePacketWithHeaderAs<GetPollInfo_output>();
+
+// QRWA
+template qRWAGetGovParams_output QubicConnection::receivePacketWithHeaderAs<qRWAGetGovParams_output>();
+template qRWAGetGovPoll_output QubicConnection::receivePacketWithHeaderAs<qRWAGetGovPoll_output>();
+template qRWAGetAssetReleasePoll_output QubicConnection::receivePacketWithHeaderAs<qRWAGetAssetReleasePoll_output>();
+template qRWAGetTreasuryBalance_output QubicConnection::receivePacketWithHeaderAs<qRWAGetTreasuryBalance_output>();
+template qRWAGetDividendBalances_output QubicConnection::receivePacketWithHeaderAs<qRWAGetDividendBalances_output>();
+template qRWAGetTotalDistributed_output QubicConnection::receivePacketWithHeaderAs<qRWAGetTotalDistributed_output>();

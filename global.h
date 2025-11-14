@@ -249,3 +249,19 @@ int64_t g_qbond_mbondPrice = 0;
 int64_t g_qbond_burnAmount = 0;
 char* g_qbond_owner = nullptr;
 bool g_qbond_updateCFAOperation = false;
+
+// qrwa
+char* g_qrwa_assetName = nullptr;
+char* g_qrwa_issuerId = nullptr;
+char* g_qrwa_destinationId = nullptr;
+char* g_qrwa_proposalName = nullptr;
+uint64_t g_qrwa_proposalId = 0;
+uint64_t g_qrwa_voteOption = 0;
+char* g_qrwa_govAdmin = nullptr;
+char* g_qrwa_govElectricity = nullptr;
+char* g_qrwa_govMaintenance = nullptr;
+char* g_qrwa_govReinvestment = nullptr;
+char* g_qrwa_govQmineDev = nullptr;
+uint64_t g_qrwa_govElectricityPercent = 0;
+uint64_t g_qrwa_govMaintenancePercent = 0;
+uint64_t g_qrwa_govReinvestmentPercent = 0;

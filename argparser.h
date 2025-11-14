@@ -475,6 +475,30 @@ void print_help()
     printf("\t-qbondgetcfa\n");
     printf("\t\tGet list of commission free addresses.\n");
 
+    printf("\n[QRWA COMMANDS]\n");
+    printf("\t-qrwadonatetoasury <AMOUNT>\n");
+    printf("\t\tDonate QMINE (managed by qRWA) to the treasury. Requires seed.\n");
+    printf("\t-qrwavotegovparams <ADMIN_ID> <ELEC_ID> <MAIN_ID> <REINV_ID> <DEV_ID> <ELEC_PERC> <MAIN_PERC> <REINV_PERC>\n");
+    printf("\t\tVote for a set of governance parameters. All params required. Percentages are 1/1000ths (e.g., 350 for 35.0%%). Requires seed.\n");
+    printf("\t-qrwacreateassetpoll <POLL_NAME> <ASSET_NAME> <ISSUER_ID> <AMOUNT> <DEST_ID>\n");
+    printf("\t\tCreate a poll to release assets from the treasury. Admin only. Requires seed.\n");
+    printf("\t-qrwavoteassetrelease <POLL_ID> <OPTION>\n");
+    printf("\t\tVote on an asset release poll. <OPTION> is 1 for YES, 0 for NO. Requires seed.\n");
+    printf("\t-qrwadepositgeneralasset <ASSET_NAME> <ISSUER_ID> <AMOUNT>\n");
+    printf("\t\tDeposit a general asset (like SC shares) into the dividend pool. Admin only. Requires seed.\n");
+    printf("\t-qrwagetgovparams\n");
+    printf("\t\tGet the current live governance parameters.\n");
+    printf("\t-qrwagetgovpoll <POLL_ID>\n");
+    printf("\t\tGet the details and status of a specific governance poll.\n");
+    printf("\t-qrwagetassetreleasepoll <POLL_ID>\n");
+    printf("\t\tGet the details and status of a specific asset release poll.\n");
+    printf("\t-qrwagettreasurybalance\n");
+    printf("\t\tGet the current QMINE balance of the contract's treasury.\n");
+    printf("\t-qrwagetdividendbalances\n");
+    printf("\t\tGet the balances of all revenue and dividend pools.\n");
+    printf("\t-qrwagettotaldistributed\n");
+    printf("\t\tGet the total historical amount distributed to QMINE and qRWA holders.\n");
+
     printf("\n[TESTING COMMANDS]\n");
     printf("\t-testqpifunctionsoutput\n");
     printf("\t\tTest that output of qpi functions matches TickData and quorum tick votes for 15 ticks in the future (as specified by scheduletick offset). Requires the TESTEXA SC to be enabled.\n");
@@ -2623,6 +2647,115 @@ void parseArgument(int argc, char** argv)
             break;
         }
 
+        /**************************
+          **** QRWA COMMANDS ****
+         **************************/
+
+        if (strcmp(argv[i], "-qrwadonatetoasury") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(1)
+            g_cmd = QRWA_DONATE_TO_TREASURY_CMD;
+            g_txAmount = charToNumber(argv[i + 1]);
+            i += 2;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwavotegovparams") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(8)
+            g_cmd = QRWA_VOTE_GOV_PARAMS_CMD;
+            g_qrwa_govAdmin = argv[i + 1];
+            g_qrwa_govElectricity = argv[i + 2];
+            g_qrwa_govMaintenance = argv[i + 3];
+            g_qrwa_govReinvestment = argv[i + 4];
+            g_qrwa_govQmineDev = argv[i + 5];
+            g_qrwa_govElectricityPercent = charToUnsignedNumber(argv[i + 6]);
+            g_qrwa_govMaintenancePercent = charToUnsignedNumber(argv[i + 7]);
+            g_qrwa_govReinvestmentPercent = charToUnsignedNumber(argv[i + 8]);
+            i += 9;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwacreateassetpoll") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(5)
+            g_cmd = QRWA_CREATE_ASSET_RELEASE_POLL_CMD;
+            g_qrwa_proposalName = argv[i + 1];
+            g_qrwa_assetName = argv[i + 2];
+            g_qrwa_issuerId = argv[i + 3];
+            g_txAmount = charToNumber(argv[i + 4]);
+            g_qrwa_destinationId = argv[i + 5];
+            i += 6;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwavoteassetrelease") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(2)
+            g_cmd = QRWA_VOTE_ASSET_RELEASE_CMD;
+            g_qrwa_proposalId = charToUnsignedNumber(argv[i + 1]);
+            g_qrwa_voteOption = charToUnsignedNumber(argv[i + 2]);
+            i += 3;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwadepositgeneralasset") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(3)
+            g_cmd = QRWA_DEPOSIT_GENERAL_ASSET_CMD;
+            g_qrwa_assetName = argv[i + 1];
+            g_qrwa_issuerId = argv[i + 2];
+            g_txAmount = charToNumber(argv[i + 3]);
+            i += 4;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagetgovparams") == 0)
+        {
+            g_cmd = QRWA_GET_GOV_PARAMS_CMD;
+            i++;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagetgovpoll") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(1)
+            g_cmd = QRWA_GET_GOV_POLL_CMD;
+            g_qrwa_proposalId = charToUnsignedNumber(argv[i + 1]);
+            i += 2;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagetassetreleasepoll") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(1)
+            g_cmd = QRWA_GET_ASSET_RELEASE_POLL_CMD;
+            g_qrwa_proposalId = charToUnsignedNumber(argv[i + 1]);
+            i += 2;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagettreasurybalance") == 0)
+        {
+            g_cmd = QRWA_GET_TREASURY_BALANCE_CMD;
+            i++;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagetdividendbalances") == 0)
+        {
+            g_cmd = QRWA_GET_DIVIDEND_BALANCES_CMD;
+            i++;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagettotaldistributed") == 0)
+        {
+            g_cmd = QRWA_GET_TOTAL_DISTRIBUTED_CMD;
+            i++;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
 
         /*****************************************
          ***** SHAREHOLDER PROPOSAL COMMANDS *****

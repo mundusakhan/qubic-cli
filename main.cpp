@@ -21,6 +21,7 @@
 #include "test_utils.h"
 #include "nostromo.h"
 #include "qbond.h"
+#include "qrwa.h"
 
 int run(int argc, char* argv[])
 {
@@ -1270,6 +1271,86 @@ int run(int argc, char* argv[])
             qbondGetCFA(g_nodeIp, g_nodePort);
             break;
         }
+        // QRWA
+        case QRWA_DONATE_TO_TREASURY_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckSeed(g_seed);
+            sanityCheckTxAmount(g_txAmount);
+            qrwaDonateToTreasury(g_nodeIp, g_nodePort, g_seed, g_txAmount, g_offsetScheduledTick);
+            break;
+        case QRWA_VOTE_GOV_PARAMS_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckSeed(g_seed);
+            sanityCheckIdentity(g_qrwa_govAdmin);
+            sanityCheckIdentity(g_qrwa_govElectricity);
+            sanityCheckIdentity(g_qrwa_govMaintenance);
+            sanityCheckIdentity(g_qrwa_govReinvestment);
+            sanityCheckIdentity(g_qrwa_govQmineDev);
+            qRWAGovParams_cli params;
+            getPublicKeyFromIdentity(g_qrwa_govAdmin, params.mAdminAddress);
+            getPublicKeyFromIdentity(g_qrwa_govElectricity, params.electricityAddress);
+            getPublicKeyFromIdentity(g_qrwa_govMaintenance, params.maintenanceAddress);
+            getPublicKeyFromIdentity(g_qrwa_govReinvestment, params.reinvestmentAddress);
+            getPublicKeyFromIdentity(g_qrwa_govQmineDev, params.qmineDevAddress);
+            params.electricityPercent = g_qrwa_govElectricityPercent;
+            params.maintenancePercent = g_qrwa_govMaintenancePercent;
+            params.reinvestmentPercent = g_qrwa_govReinvestmentPercent;
+            qrwaVoteGovParams(g_nodeIp, g_nodePort, g_seed, params, g_offsetScheduledTick);
+            break;
+        case QRWA_CREATE_ASSET_RELEASE_POLL_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckSeed(g_seed);
+            sanityCheckValidString(g_qrwa_proposalName);
+            sanityCheckValidAssetName(g_qrwa_assetName);
+            sanityCheckIdentity(g_qrwa_issuerId);
+            sanityCheckTxAmount(g_txAmount);
+            sanityCheckIdentity(g_qrwa_destinationId);
+            qrwaCreateAssetReleasePoll(g_nodeIp, g_nodePort, g_seed,
+                g_qrwa_proposalName, g_qrwa_assetName, g_qrwa_issuerId,
+                g_txAmount, g_qrwa_destinationId, g_offsetScheduledTick);
+            break;
+        case QRWA_VOTE_ASSET_RELEASE_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckSeed(g_seed);
+            if (g_qrwa_voteOption > 1)
+            {
+                LOG("Invalid vote option: must be 0 (NO) or 1 (YES).\n");
+                exit(1);
+            }
+            qrwaVoteAssetRelease(g_nodeIp, g_nodePort, g_seed, g_qrwa_proposalId, g_qrwa_voteOption, g_offsetScheduledTick);
+            break;
+        case QRWA_DEPOSIT_GENERAL_ASSET_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckSeed(g_seed);
+            sanityCheckValidAssetName(g_qrwa_assetName);
+            sanityCheckIdentity(g_qrwa_issuerId);
+            sanityCheckTxAmount(g_txAmount);
+            qrwaDepositGeneralAsset(g_nodeIp, g_nodePort, g_seed, g_qrwa_assetName, g_qrwa_issuerId, g_txAmount, g_offsetScheduledTick);
+            break;
+        case QRWA_GET_GOV_PARAMS_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetGovParams(g_nodeIp, g_nodePort);
+            break;
+        case QRWA_GET_GOV_POLL_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetGovPoll(g_nodeIp, g_nodePort, g_qrwa_proposalId);
+            break;
+        case QRWA_GET_ASSET_RELEASE_POLL_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetAssetReleasePoll(g_nodeIp, g_nodePort, g_qrwa_proposalId);
+            break;
+        case QRWA_GET_TREASURY_BALANCE_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetTreasuryBalance(g_nodeIp, g_nodePort);
+            break;
+        case QRWA_GET_DIVIDEND_BALANCES_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetDividendBalances(g_nodeIp, g_nodePort);
+            break;
+        case QRWA_GET_TOTAL_DISTRIBUTED_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetTotalDistributed(g_nodeIp, g_nodePort);
+            break;
         case SHAREHOLDER_SET_PROPOSAL:
             sanityCheckNode(g_nodeIp, g_nodePort);
             sanityCheckSeed(g_seed);
@@ -1292,9 +1373,13 @@ int run(int argc, char* argv[])
         case SHAREHOLDER_GET_VOTE:
             sanityCheckNode(g_nodeIp, g_nodePort);
             if (g_requestedIdentity)
+            {
                 sanityCheckIdentity(g_requestedIdentity);
+            }
             else
+            {
                 sanityCheckSeed(g_seed);
+            }
             shareholderGetVote(g_nodeIp, g_nodePort, g_contractIndex, g_proposalString, g_requestedIdentity, g_seed);
             break;
         case SHAREHOLDER_GET_VOTING_RESULTS:

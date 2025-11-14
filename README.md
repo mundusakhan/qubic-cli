@@ -310,6 +310,30 @@ Commands:
 	-msvaultgetvaultowners <VAULT_ID>
 			Get MsVault owners given vault ID.
 
+[QRWA COMMANDS]
+   -qrwadonatetoasury <AMOUNT>
+      Donate QMINE (managed by qRWA) to the treasury. Requires seed.
+   -qrwavotegovparams <ADMIN_ID> <ELEC_ID> <MAIN_ID> <REINV_ID> <DEV_ID> <ELEC_PERC> <MAIN_PERC> <REINV_PERC>
+      Vote for a set of governance parameters. All params required. Percentages are 1/1000ths (e.g., 350 for 35.0%). Requires seed.
+   -qrwacreateassetpoll <POLL_NAME> <ASSET_NAME> <ISSUER_ID> <AMOUNT> <DEST_ID>
+      Create a poll to release assets from the treasury. Admin only. Requires seed.
+   -qrwavoteassetrelease <POLL_ID> <OPTION>
+      Vote on an asset release poll. <OPTION> is 1 for YES, 0 for NO. Requires seed.
+   -qrwadepositgeneralasset <ASSET_NAME> <ISSUER_ID> <AMOUNT>
+      Deposit a general asset (like SC shares) into the dividend pool. Admin only. Requires seed.
+   -qrwagetgovparams
+      Get the current live governance parameters.
+   -qrwagetgovpoll <POLL_ID>
+      Get the details and status of a specific governance poll.
+   -qrwagetassetreleasepoll <POLL_ID>
+      Get the details and status of a specific asset release poll.
+   -qrwagettreasurybalance
+      Get the current QMINE balance of the contract's treasury.
+   -qrwagetdividendbalances
+      Get the balances of all revenue and dividend pools.
+   -qrwagettotaldistributed
+      Get the total historical amount distributed to QMINE and qRWA holders.
+
 [QSWAP COMMANDS]
 	-qswapgetfee
 		Show current Qswap fees.
