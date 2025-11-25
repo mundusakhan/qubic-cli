@@ -710,3 +710,52 @@ void qrwaGetActiveGovPollIds(const char* nodeIp, int nodePort)
         LOG(" - Proposal ID: %" PRIu64 "\n", output.ids[i]);
     }
 }
+
+void qrwaGetGeneralAssetBalance(const char* nodeIp, int nodePort, const char* assetName, const char* issuerId)
+{
+    auto qc = make_qc(nodeIp, nodePort);
+    if (!qc) { LOG("Failed to connect to node.\n"); return; }
+
+    qRWAGetGeneralAssetBalance_input input;
+    memset(&input, 0, sizeof(input));
+
+    input.asset.assetName = assetNameFromString(assetName);
+    getPublicKeyFromIdentity(issuerId, input.asset.issuer);
+
+    struct {
+        RequestResponseHeader header;
+        RequestContractFunction rcf;
+        qRWAGetGeneralAssetBalance_input in;
+    } req;
+
+    memset(&req, 0, sizeof(req));
+    req.rcf.contractIndex = QRWA_CONTRACT_INDEX;
+    req.rcf.inputType = QRWA_GET_GENERAL_ASSET_BALANCE;
+    req.rcf.inputSize = sizeof(input);
+    memcpy(&req.in, &input, sizeof(input));
+
+    req.header.setSize(sizeof(req.header) + sizeof(req.rcf) + sizeof(input));
+    req.header.randomizeDejavu();
+    req.header.setType(RequestContractFunction::type());
+
+    qc->sendData((uint8_t*)&req, req.header.size());
+
+    qRWAGetGeneralAssetBalance_output output;
+    memset(&output, 0, sizeof(output));
+    try {
+        output = qc->receivePacketWithHeaderAs<qRWAGetGeneralAssetBalance_output>();
+    }
+    catch (std::logic_error& e) {
+        LOG("Failed to get general asset balance: %s\n", e.what());
+        return;
+    }
+
+    if (output.status == 1)
+    {
+        LOG("General Asset Balance for %s (Issuer: %s): %" PRIu64 "\n", assetName, issuerId, output.balance);
+    }
+    else
+    {
+        LOG("Asset %s (Issuer: %s) not found in qRWA General Assets.\n", assetName, issuerId);
+    }
+}

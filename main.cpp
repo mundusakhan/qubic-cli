@@ -1359,6 +1359,12 @@ int run(int argc, char* argv[])
             sanityCheckNode(g_nodeIp, g_nodePort);
             qrwaGetActiveGovPollIds(g_nodeIp, g_nodePort);
             break;
+        case QRWA_GET_GENERAL_ASSET_BALANCE_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckValidAssetName(g_qrwa_assetName);
+            sanityCheckIdentity(g_qrwa_issuerId);
+            qrwaGetGeneralAssetBalance(g_nodeIp, g_nodePort, g_qrwa_assetName, g_qrwa_issuerId);
+            break;
         case SHAREHOLDER_SET_PROPOSAL:
             sanityCheckNode(g_nodeIp, g_nodePort);
             sanityCheckSeed(g_seed);

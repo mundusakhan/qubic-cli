@@ -502,6 +502,8 @@ void print_help()
     printf("\t\tGet a list of all currently active asset release proposal IDs.\n");
     printf("\t-qrwagetactivegovpollids\n");
     printf("\t\tGet a list of all currently active governance proposal IDs.\n");
+    printf("\t-qrwagetgeneralassetbalance <ASSET_NAME> <ISSUER_ID>\n");
+    printf("\t\tGet the balance of a specific general asset held by the contract.\n");
 
     printf("\n[TESTING COMMANDS]\n");
     printf("\t-testqpifunctionsoutput\n");
@@ -2773,6 +2775,16 @@ void parseArgument(int argc, char** argv)
             i++;
             CHECK_OVER_PARAMETERS
             return;
+        }
+        if (strcmp(argv[i], "-qrwagetgeneralassetbalance") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(2)
+            g_cmd = QRWA_GET_GENERAL_ASSET_BALANCE_CMD;
+            g_qrwa_assetName = argv[i + 1];
+            g_qrwa_issuerId = argv[i + 2];
+            i += 3;
+            CHECK_OVER_PARAMETERS
+            break;
         }
 
         /*****************************************
