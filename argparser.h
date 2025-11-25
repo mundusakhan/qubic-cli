@@ -498,6 +498,10 @@ void print_help()
     printf("\t\tGet the balances of all revenue and dividend pools.\n");
     printf("\t-qrwagettotaldistributed\n");
     printf("\t\tGet the total historical amount distributed to QMINE and qRWA holders.\n");
+    printf("\t-qrwagetactiveassetreleasepollids\n");
+    printf("\t\tGet a list of all currently active asset release proposal IDs.\n");
+    printf("\t-qrwagetactivegovpollids\n");
+    printf("\t\tGet a list of all currently active governance proposal IDs.\n");
 
     printf("\n[TESTING COMMANDS]\n");
     printf("\t-testqpifunctionsoutput\n");
@@ -2752,6 +2756,20 @@ void parseArgument(int argc, char** argv)
         if (strcmp(argv[i], "-qrwagettotaldistributed") == 0)
         {
             g_cmd = QRWA_GET_TOTAL_DISTRIBUTED_CMD;
+            i++;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagetactiveassetreleasepollids") == 0)
+        {
+            g_cmd = QRWA_GET_ACTIVE_ASSET_RELEASE_POLL_IDS_CMD;
+            i++;
+            CHECK_OVER_PARAMETERS
+            return;
+        }
+        if (strcmp(argv[i], "-qrwagetactivegovpollids") == 0)
+        {
+            g_cmd = QRWA_GET_ACTIVE_GOV_POLL_IDS_CMD;
             i++;
             CHECK_OVER_PARAMETERS
             return;

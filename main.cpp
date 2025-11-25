@@ -1351,6 +1351,14 @@ int run(int argc, char* argv[])
             sanityCheckNode(g_nodeIp, g_nodePort);
             qrwaGetTotalDistributed(g_nodeIp, g_nodePort);
             break;
+        case QRWA_GET_ACTIVE_ASSET_RELEASE_POLL_IDS_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetActiveAssetReleasePollIds(g_nodeIp, g_nodePort);
+            break;
+        case QRWA_GET_ACTIVE_GOV_POLL_IDS_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetActiveGovPollIds(g_nodeIp, g_nodePort);
+            break;
         case SHAREHOLDER_SET_PROPOSAL:
             sanityCheckNode(g_nodeIp, g_nodePort);
             sanityCheckSeed(g_seed);

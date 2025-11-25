@@ -620,3 +620,93 @@ void qrwaGetTotalDistributed(const char* nodeIp, int nodePort)
     LOG("  Total to QMINE Holders: .... %" PRIu64 "\n", output.totalQmineDistributed);
     LOG("  Total to qRWA Shareholders:  %" PRIu64 "\n", output.totalQRWADistributed);
 }
+
+void qrwaGetActiveAssetReleasePollIds(const char* nodeIp, int nodePort)
+{
+    auto qc = make_qc(nodeIp, nodePort);
+    if (!qc)
+    {
+        LOG("Failed to connect to node.\n"); return;
+    }
+
+    struct
+    {
+        RequestResponseHeader header;
+        RequestContractFunction rcf;
+    } req;
+
+    memset(&req, 0, sizeof(req));
+    req.rcf.contractIndex = QRWA_CONTRACT_INDEX;
+    req.rcf.inputType = QRWA_GET_ACTIVE_ASSET_RELEASE_POLL_IDS;
+    req.rcf.inputSize = 0;
+
+    req.header.setSize(sizeof(req.header) + sizeof(req.rcf));
+    req.header.randomizeDejavu();
+    req.header.setType(RequestContractFunction::type());
+
+    qc->sendData((uint8_t*)&req, req.header.size());
+
+    qRWAGetActiveAssetReleasePollIds_output output;
+    memset(&output, 0, sizeof(output));
+
+    try
+    {
+        output = qc->receivePacketWithHeaderAs<qRWAGetActiveAssetReleasePollIds_output>();
+    }
+    catch (std::logic_error& e)
+    {
+        LOG("Failed to get active asset release poll IDs: %s\n", e.what());
+        return;
+    }
+
+    LOG("Active Asset Release Polls (% " PRIu64 " found):\n", output.count);
+    for (uint64_t i = 0; i < output.count; i++)
+    {
+        LOG(" - Proposal ID: %" PRIu64 "\n", output.ids[i]);
+    }
+}
+
+void qrwaGetActiveGovPollIds(const char* nodeIp, int nodePort)
+{
+    auto qc = make_qc(nodeIp, nodePort);
+    if (!qc)
+    {
+        LOG("Failed to connect to node.\n"); return;
+    }
+
+    struct
+    {
+        RequestResponseHeader header;
+        RequestContractFunction rcf;
+    } req;
+
+    memset(&req, 0, sizeof(req));
+    req.rcf.contractIndex = QRWA_CONTRACT_INDEX;
+    req.rcf.inputType = QRWA_GET_ACTIVE_GOV_POLL_IDS;
+    req.rcf.inputSize = 0;
+
+    req.header.setSize(sizeof(req.header) + sizeof(req.rcf));
+    req.header.randomizeDejavu();
+    req.header.setType(RequestContractFunction::type());
+
+    qc->sendData((uint8_t*)&req, req.header.size());
+
+    qRWAGetActiveGovPollIds_output output;
+    memset(&output, 0, sizeof(output));
+
+    try
+    {
+        output = qc->receivePacketWithHeaderAs<qRWAGetActiveGovPollIds_output>();
+    }
+    catch (std::logic_error& e)
+    {
+        LOG("Failed to get active governance poll IDs: %s\n", e.what());
+        return;
+    }
+
+    LOG("Active Governance Polls (% " PRIu64 " found):\n", output.count);
+    for (uint64_t i = 0; i < output.count; i++)
+    {
+        LOG(" - Proposal ID: %" PRIu64 "\n", output.ids[i]);
+    }
+}
