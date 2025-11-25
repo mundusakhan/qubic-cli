@@ -26,6 +26,7 @@
 #define QRWA_GET_ACTIVE_ASSET_RELEASE_POLL_IDS 7
 #define QRWA_GET_ACTIVE_GOV_POLL_IDS 8
 #define QRWA_GET_GENERAL_ASSET_BALANCE 9
+#define QRWA_GET_GENERAL_ASSETS 10
 
 
 struct qRWAGovParams_cli {
@@ -208,6 +209,18 @@ struct qRWAGetGeneralAssetBalance_output
     }
 };
 
+struct qRWAGetGeneralAssets_input {};
+struct qRWAGetGeneralAssets_output
+{
+    uint64_t count;
+    qpi::Asset assets[QRWA_MAX_ASSETS];
+    uint64_t balances[QRWA_MAX_ASSETS];
+    static constexpr unsigned char type()
+    {
+        return RespondContractFunction::type();
+    }
+};
+
 void qrwaDonateToTreasury(const char* nodeIp, int nodePort, const char* seed,
     uint64_t amount, uint32_t scheduledTickOffset);
 
@@ -234,3 +247,4 @@ void qrwaGetTotalDistributed(const char* nodeIp, int nodePort);
 void qrwaGetActiveAssetReleasePollIds(const char* nodeIp, int nodePort);
 void qrwaGetActiveGovPollIds(const char* nodeIp, int nodePort);
 void qrwaGetGeneralAssetBalance(const char* nodeIp, int nodePort, const char* assetName, const char* issuerId);
+void qrwaGetGeneralAssets(const char* nodeIp, int nodePort);

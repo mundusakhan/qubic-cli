@@ -1365,6 +1365,10 @@ int run(int argc, char* argv[])
             sanityCheckIdentity(g_qrwa_issuerId);
             qrwaGetGeneralAssetBalance(g_nodeIp, g_nodePort, g_qrwa_assetName, g_qrwa_issuerId);
             break;
+        case QRWA_GET_GENERAL_ASSETS_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            qrwaGetGeneralAssets(g_nodeIp, g_nodePort);
+            break;
         case SHAREHOLDER_SET_PROPOSAL:
             sanityCheckNode(g_nodeIp, g_nodePort);
             sanityCheckSeed(g_seed);

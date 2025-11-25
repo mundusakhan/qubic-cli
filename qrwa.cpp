@@ -759,3 +759,59 @@ void qrwaGetGeneralAssetBalance(const char* nodeIp, int nodePort, const char* as
         LOG("Asset %s (Issuer: %s) not found in qRWA General Assets.\n", assetName, issuerId);
     }
 }
+
+void qrwaGetGeneralAssets(const char* nodeIp, int nodePort)
+{
+    auto qc = make_qc(nodeIp, nodePort);
+    if (!qc)
+    {
+        LOG("Failed to connect to node.\n"); return;
+    }
+
+    struct
+    {
+        RequestResponseHeader header;
+        RequestContractFunction rcf;
+        qRWAGetGeneralAssets_input in;
+    } req;
+
+    memset(&req, 0, sizeof(req));
+    req.rcf.contractIndex = QRWA_CONTRACT_INDEX;
+    req.rcf.inputType = QRWA_GET_GENERAL_ASSETS;
+    req.rcf.inputSize = 0;
+
+    req.header.setSize(sizeof(req.header) + sizeof(req.rcf));
+    req.header.randomizeDejavu();
+    req.header.setType(RequestContractFunction::type());
+
+    qc->sendData((uint8_t*)&req, req.header.size());
+
+    qRWAGetGeneralAssets_output output;
+    memset(&output, 0, sizeof(output));
+    try
+    {
+        output = qc->receivePacketWithHeaderAs<qRWAGetGeneralAssets_output>();
+    }
+    catch (std::logic_error& e)
+    {
+        LOG("Failed to get general assets: %s\n", e.what());
+        return;
+    }
+
+    LOG("General Assets held by qRWA (%llu found):\n", (unsigned long long)output.count);
+
+    for (uint64_t i = 0; i < output.count; i++)
+    {
+        char assetNameStr[8] = { 0 };
+        char issuerStr[128] = { 0 };
+
+        assetNameToString(output.assets[i].assetName, assetNameStr);
+        getIdentityFromPublicKey(output.assets[i].issuer, issuerStr, false);
+
+        LOG("  %d. Asset: %s | Issuer: %s | Balance: %" PRIu64 "\n",
+            (int)(i + 1),
+            assetNameStr,
+            issuerStr,
+            output.balances[i]);
+    }
+}

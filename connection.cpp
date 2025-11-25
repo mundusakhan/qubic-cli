@@ -409,3 +409,4 @@ template qRWAGetTotalDistributed_output QubicConnection::receivePacketWithHeader
 template qRWAGetActiveAssetReleasePollIds_output QubicConnection::receivePacketWithHeaderAs<qRWAGetActiveAssetReleasePollIds_output>();
 template qRWAGetActiveGovPollIds_output QubicConnection::receivePacketWithHeaderAs<qRWAGetActiveGovPollIds_output>();
 template qRWAGetGeneralAssetBalance_output QubicConnection::receivePacketWithHeaderAs<qRWAGetGeneralAssetBalance_output>();
+template qRWAGetGeneralAssets_output QubicConnection::receivePacketWithHeaderAs<qRWAGetGeneralAssets_output>();
