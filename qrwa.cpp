@@ -16,16 +16,24 @@
 
 
 static void printQrwaGovParams(const qRWAGovParams_cli& params) {
-    char identityStr[128];
+    char identityStr[128] = { 0 };
 
     getIdentityFromPublicKey(params.mAdminAddress, identityStr, false);
     LOG("  Admin Address: ........... %s\n", identityStr);
+
+    memset(identityStr, 0, sizeof(identityStr));
     getIdentityFromPublicKey(params.electricityAddress, identityStr, false);
     LOG("  Electricity Address: ..... %s\n", identityStr);
+
+    memset(identityStr, 0, sizeof(identityStr));
     getIdentityFromPublicKey(params.maintenanceAddress, identityStr, false);
     LOG("  Maintenance Address: ..... %s\n", identityStr);
+
+    memset(identityStr, 0, sizeof(identityStr));
     getIdentityFromPublicKey(params.reinvestmentAddress, identityStr, false);
     LOG("  Reinvestment Address: .... %s\n", identityStr);
+
+    memset(identityStr, 0, sizeof(identityStr));
     getIdentityFromPublicKey(params.qmineDevAddress, identityStr, false);
     LOG("  QMINE Dev Address: ....... %s\n", identityStr);
 
@@ -56,6 +64,7 @@ void qrwaDonateToTreasury(const char* nodeIp, int nodePort, const char* seed,
     if (!qc) { LOG("Failed to connect to node.\n"); return; }
 
     uint8_t subseed[32] = { 0 };
+    uint8_t privateKey[32] = { 0 };
     uint8_t sourcePublicKey[32] = { 0 };
     uint8_t destPublicKey[32] = { 0 };
     uint8_t digest[32];
@@ -63,7 +72,9 @@ void qrwaDonateToTreasury(const char* nodeIp, int nodePort, const char* seed,
     char txHash[128] = { 0 };
 
     getSubseedFromSeed((uint8_t*)seed, subseed);
-    getPublicKeyFromPrivateKey(subseed, sourcePublicKey);
+    getPrivateKeyFromSubSeed(subseed, privateKey);
+    getPublicKeyFromPrivateKey(privateKey, sourcePublicKey);
+
     memset(destPublicKey, 0, 32);
     ((uint64_t*)destPublicKey)[0] = QRWA_CONTRACT_INDEX;
 
@@ -113,6 +124,7 @@ void qrwaVoteGovParams(const char* nodeIp, int nodePort, const char* seed,
     if (!qc) { LOG("Failed to connect to node.\n"); return; }
 
     uint8_t subseed[32] = { 0 };
+    uint8_t privateKey[32] = { 0 };
     uint8_t sourcePublicKey[32] = { 0 };
     uint8_t destPublicKey[32] = { 0 };
     uint8_t digest[32];
@@ -120,7 +132,9 @@ void qrwaVoteGovParams(const char* nodeIp, int nodePort, const char* seed,
     char txHash[128] = { 0 };
 
     getSubseedFromSeed((uint8_t*)seed, subseed);
-    getPublicKeyFromPrivateKey(subseed, sourcePublicKey);
+    getPrivateKeyFromSubSeed(subseed, privateKey);
+    getPublicKeyFromPrivateKey(privateKey, sourcePublicKey);
+
     memset(destPublicKey, 0, 32);
     ((uint64_t*)destPublicKey)[0] = QRWA_CONTRACT_INDEX;
 
@@ -181,6 +195,7 @@ void qrwaCreateAssetReleasePoll(const char* nodeIp, int nodePort, const char* se
     if (!qc) { LOG("Failed to connect to node.\n"); return; }
 
     uint8_t subseed[32] = { 0 };
+    uint8_t privateKey[32] = { 0 };
     uint8_t sourcePublicKey[32] = { 0 };
     uint8_t destPublicKey[32] = { 0 };
     uint8_t digest[32];
@@ -188,7 +203,9 @@ void qrwaCreateAssetReleasePoll(const char* nodeIp, int nodePort, const char* se
     char txHash[128] = { 0 };
 
     getSubseedFromSeed((uint8_t*)seed, subseed);
-    getPublicKeyFromPrivateKey(subseed, sourcePublicKey);
+    getPrivateKeyFromSubSeed(subseed, privateKey);
+    getPublicKeyFromPrivateKey(privateKey, sourcePublicKey);
+
     memset(destPublicKey, 0, 32);
     ((uint64_t*)destPublicKey)[0] = QRWA_CONTRACT_INDEX;
 
@@ -239,6 +256,7 @@ void qrwaVoteAssetRelease(const char* nodeIp, int nodePort, const char* seed,
     if (!qc) { LOG("Failed to connect to node.\n"); return; }
 
     uint8_t subseed[32] = { 0 };
+    uint8_t privateKey[32] = { 0 };
     uint8_t sourcePublicKey[32] = { 0 };
     uint8_t destPublicKey[32] = { 0 };
     uint8_t digest[32];
@@ -246,7 +264,9 @@ void qrwaVoteAssetRelease(const char* nodeIp, int nodePort, const char* seed,
     char txHash[128] = { 0 };
 
     getSubseedFromSeed((uint8_t*)seed, subseed);
-    getPublicKeyFromPrivateKey(subseed, sourcePublicKey);
+    getPrivateKeyFromSubSeed(subseed, privateKey);
+    getPublicKeyFromPrivateKey(privateKey, sourcePublicKey);
+
     memset(destPublicKey, 0, 32);
     ((uint64_t*)destPublicKey)[0] = QRWA_CONTRACT_INDEX;
 
@@ -301,6 +321,7 @@ void qrwaDepositGeneralAsset(const char* nodeIp, int nodePort, const char* seed,
     if (!qc) { LOG("Failed to connect to node.\n"); return; }
 
     uint8_t subseed[32] = { 0 };
+    uint8_t privateKey[32] = { 0 };
     uint8_t sourcePublicKey[32] = { 0 };
     uint8_t destPublicKey[32] = { 0 };
     uint8_t digest[32];
@@ -308,7 +329,9 @@ void qrwaDepositGeneralAsset(const char* nodeIp, int nodePort, const char* seed,
     char txHash[128] = { 0 };
 
     getSubseedFromSeed((uint8_t*)seed, subseed);
-    getPublicKeyFromPrivateKey(subseed, sourcePublicKey);
+    getPrivateKeyFromSubSeed(subseed, privateKey);
+    getPublicKeyFromPrivateKey(privateKey, sourcePublicKey);
+
     memset(destPublicKey, 0, 32);
     ((uint64_t*)destPublicKey)[0] = QRWA_CONTRACT_INDEX;
 
