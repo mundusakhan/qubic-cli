@@ -14,6 +14,7 @@
 #include "sanity_check.h"
 #include "asset_utils.h"
 
+constexpr uint64_t QRWA_REVOKE_FEE = 100;
 
 static void printQrwaGovParams(const qRWAGovParams_cli& params) {
     char identityStr[128] = { 0 };
@@ -371,6 +372,69 @@ void qrwaDepositGeneralAsset(const char* nodeIp, int nodePort, const char* seed,
     LOG("to check your tx confirmation status\n");
 }
 
+void qrwaRevokeAssetManagementRights(const char* nodeIp, int nodePort, const char* seed,
+    const char* assetName, const char* issuerId, int64_t numberOfShares,
+    uint32_t scheduledTickOffset)
+{
+    auto qc = make_qc(nodeIp, nodePort);
+    if (!qc) { LOG("Failed to connect to node.\n"); return; }
+
+    qRWARevokeAssetManagementRights_input input;
+    memset(&input, 0, sizeof(input));
+    input.asset.assetName = assetNameFromString(assetName);
+    getPublicKeyFromIdentity(issuerId, input.asset.issuer);
+    input.numberOfShares = numberOfShares;
+
+    uint8_t subseed[32] = { 0 };
+    uint8_t privateKey[32] = { 0 };
+    uint8_t sourcePublicKey[32] = { 0 };
+    uint8_t destPublicKey[32] = { 0 };
+    uint8_t digest[32];
+    uint8_t signature[64];
+    char txHash[128] = { 0 };
+
+    getSubseedFromSeed((uint8_t*)seed, subseed);
+    getPrivateKeyFromSubSeed(subseed, privateKey);
+    getPublicKeyFromPrivateKey(privateKey, sourcePublicKey);
+
+    memset(destPublicKey, 0, 32);
+    ((uint64_t*)destPublicKey)[0] = QRWA_CONTRACT_INDEX;
+
+    struct {
+        RequestResponseHeader header;
+        Transaction transaction;
+        qRWARevokeAssetManagementRights_input inputData;
+        uint8_t sig[64];
+    } packet;
+
+    memset(&packet, 0, sizeof(packet));
+    memcpy(packet.transaction.sourcePublicKey, sourcePublicKey, 32);
+    memcpy(packet.transaction.destinationPublicKey, destPublicKey, 32);
+    packet.transaction.amount = QRWA_REVOKE_FEE;
+    uint32_t currentTick = getTickNumberFromNode(qc);
+    packet.transaction.tick = currentTick + scheduledTickOffset;
+    packet.transaction.inputType = QRWA_REVOKE_ASSET_MANAGEMENT_RIGHTS;
+    packet.transaction.inputSize = sizeof(input);
+    memcpy(&packet.inputData, &input, sizeof(input));
+
+    KangarooTwelve((uint8_t*)&packet.transaction, sizeof(packet.transaction) + sizeof(input), digest, 32);
+    sign(subseed, sourcePublicKey, digest, signature);
+    memcpy(packet.sig, signature, 64);
+
+    packet.header.setSize(sizeof(packet));
+    packet.header.zeroDejavu();
+    packet.header.setType(BROADCAST_TRANSACTION);
+
+    qc->sendData((uint8_t*)&packet, packet.header.size());
+
+    KangarooTwelve((uint8_t*)&packet.transaction, sizeof(packet.transaction) + sizeof(input) + SIGNATURE_SIZE, digest, 32);
+    getTxHashFromDigest(digest, txHash);
+
+    LOG("qRWA RevokeAssetManagementRights transaction sent.\n");
+    printReceipt(packet.transaction, txHash, nullptr);
+    LOG("run ./qubic-cli [...] -checktxontick %u %s\n", currentTick + scheduledTickOffset, txHash);
+    LOG("to check your tx confirmation status\n");
+}
 
 void qrwaGetGovParams(const char* nodeIp, int nodePort)
 {

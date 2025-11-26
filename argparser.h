@@ -486,6 +486,8 @@ void print_help()
     printf("\t\tVote on an asset release poll. <OPTION> is 1 for YES, 0 for NO. Requires seed.\n");
     printf("\t-qrwadepositgeneralasset <ASSET_NAME> <ISSUER_ID> <AMOUNT>\n");
     printf("\t\tDeposit a general asset (like SC shares) into the dividend pool. Admin only. Requires seed.\n");
+    printf("\t-qrwarevokeassetrights <ASSET_NAME> <ISSUER_ID> <NUMBER_OF_SHARES>\n");
+    printf("\t\tRevoke asset management rights from qRWA, transferring them back to QX. Fee applies.\n");
     printf("\t-qrwagetgovparams\n");
     printf("\t\tGet the current live governance parameters.\n");
     printf("\t-qrwagetgovpoll <POLL_ID>\n");
@@ -2717,6 +2719,17 @@ void parseArgument(int argc, char** argv)
             i += 4;
             CHECK_OVER_PARAMETERS
             return;
+        }
+        if (strcmp(argv[i], "-qrwarevokeassetrights") == 0)
+        {
+            CHECK_NUMBER_OF_PARAMETERS(3)
+            g_cmd = QRWA_REVOKE_ASSET_RIGHTS_CMD;
+            g_qrwa_assetName = argv[i + 1];
+            g_qrwa_issuerId = argv[i + 2];
+            g_txAmount = charToNumber(argv[i + 3]);
+            i += 4;
+            CHECK_OVER_PARAMETERS
+            break;
         }
         if (strcmp(argv[i], "-qrwagetgovparams") == 0)
         {

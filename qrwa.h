@@ -16,6 +16,7 @@
 #define QRWA_CREATE_ASSET_RELEASE_POLL 5
 #define QRWA_VOTE_ASSET_RELEASE 6
 #define QRWA_DEPOSIT_GENERAL_ASSET 7
+#define QRWA_REVOKE_ASSET_MANAGEMENT_RIGHTS 8
 
 #define QRWA_GET_GOV_PARAMS 1
 #define QRWA_GET_GOV_POLL 2
@@ -115,6 +116,21 @@ struct qRWADepositGeneralAsset_output {
     }
 };
 
+struct qRWARevokeAssetManagementRights_input
+{
+    qpi::Asset asset;
+    int64_t numberOfShares;
+};
+
+struct qRWARevokeAssetManagementRights_output
+{
+    int64_t transferredNumberOfShares;
+    uint64_t status;
+    static constexpr unsigned char type()
+    {
+        return RespondContractFunction::type();
+    }
+};
 
 struct qRWAGetGovParams_input {};
 struct qRWAGetGovParams_output {
@@ -236,6 +252,10 @@ void qrwaVoteAssetRelease(const char* nodeIp, int nodePort, const char* seed,
 
 void qrwaDepositGeneralAsset(const char* nodeIp, int nodePort, const char* seed,
     const char* assetName, const char* issuerId, uint64_t amount,
+    uint32_t scheduledTickOffset);
+
+void qrwaRevokeAssetManagementRights(const char* nodeIp, int nodePort, const char* seed,
+    const char* assetName, const char* issuerId, int64_t numberOfShares,
     uint32_t scheduledTickOffset);
 
 void qrwaGetGovParams(const char* nodeIp, int nodePort);

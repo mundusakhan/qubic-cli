@@ -1327,6 +1327,14 @@ int run(int argc, char* argv[])
             sanityCheckTxAmount(g_txAmount);
             qrwaDepositGeneralAsset(g_nodeIp, g_nodePort, g_seed, g_qrwa_assetName, g_qrwa_issuerId, g_txAmount, g_offsetScheduledTick);
             break;
+        case QRWA_REVOKE_ASSET_RIGHTS_CMD:
+            sanityCheckNode(g_nodeIp, g_nodePort);
+            sanityCheckSeed(g_seed);
+            sanityCheckValidAssetName(g_qrwa_assetName);
+            sanityCheckIdentity(g_qrwa_issuerId);
+            sanityCheckTxAmount(g_txAmount);
+            qrwaRevokeAssetManagementRights(g_nodeIp, g_nodePort, g_seed, g_qrwa_assetName, g_qrwa_issuerId, g_txAmount, g_offsetScheduledTick);
+            break;
         case QRWA_GET_GOV_PARAMS_CMD:
             sanityCheckNode(g_nodeIp, g_nodePort);
             qrwaGetGovParams(g_nodeIp, g_nodePort);
