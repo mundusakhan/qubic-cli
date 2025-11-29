@@ -5,7 +5,7 @@
 
 #include "asset_utils.h"
 
-#define QRWA_CONTRACT_INDEX 18 
+#define QRWA_CONTRACT_INDEX 20
 
 #define QRWA_MAX_GOV_POLLS 64
 #define QRWA_MAX_ASSET_POLLS 64
